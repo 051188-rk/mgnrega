@@ -11,6 +11,7 @@ import PerformanceGauge from '../../../components/PerformanceGauge'
 import ComparisonTable from '../../../components/ComparisonTable'
 import LanguageSelector from '../../../components/LanguageSelector' // Added selector here
 import Spinner from '../../../components/Spinner'
+import TopDistrictsChart from '../../../components/TopDistrictsChart'
 // Import new lib functions
 import { getCurrent, getHistory, getCompare } from '../../../lib/api'
 import { formatNumber } from '../../../lib/utils'
@@ -144,9 +145,23 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* --- COMPARISON --- */}
-      <section>
-        <ComparisonTable top={compare?.top_districts || []} peers={compare?.peer_compare || []} highlightCode={code} />
+      {/* --- COMPARISON & TOP DISTRICTS SIDE BY SIDE --- */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div>
+          <h2 className="font-semibold text-text-primary mb-4 text-lg">Performance Comparison</h2>
+          <ComparisonTable 
+            top={compare?.top_districts || []} 
+            peers={compare?.peer_compare || []} 
+            highlightCode={code} 
+          />
+        </div>
+        <div>
+          <h2 className="font-semibold text-text-primary mb-4 text-lg">Top Districts</h2>
+          <TopDistrictsChart 
+            districtCode={code} 
+            stateCode={latest?.state_code} 
+          />
+        </div>
       </section>
 
       {/* --- DETAILS --- */}

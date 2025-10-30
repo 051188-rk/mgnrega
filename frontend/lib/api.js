@@ -11,3 +11,25 @@ export async function systemStatus(){ const {data}=await client.get(`/system/sta
 export async function detectByIp(){ const {data}=await client.get(`/location/detect-by-ip`); return data }
 export async function reverseGeocode(latitude, longitude){ const {data}=await client.post(`/location/reverse-geocode`, { latitude, longitude }); return data }
 export async function getStates(){ const {data}=await client.get(`/districts/states`); return data }
+
+// Financial endpoints
+export async function getWageStats(districtCode, months = 12) {
+  const { data } = await client.get(`/financial/wage-stats/${districtCode}`, { 
+    params: { months } 
+  });
+  return data;
+}
+
+export async function getFundUtilization(districtCode, months = 12) {
+  const { data } = await client.get(`/financial/fund-utilization/${districtCode}`, { 
+    params: { months }
+  });
+  return data;
+}
+
+export async function getTopExpenditures(stateCode, limit = 10) {
+  const { data } = await client.get(`/financial/top-expenditures/${stateCode}`, {
+    params: { limit }
+  });
+  return data;
+}

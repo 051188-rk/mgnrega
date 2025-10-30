@@ -9,6 +9,7 @@ const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/database');
 const districtsRouter = require('./routes/districts');
 const locationRouter = require('./routes/location');
+const financialRouter = require('./routes/financial');
 const { startDataSyncScheduler } = require('./services/dataSync');
 
 const app = express();
@@ -29,6 +30,7 @@ connectDB();
 
 app.use('/api/districts', districtsRouter);
 app.use('/api/location', locationRouter);
+app.use('/api/financial', financialRouter);
 
 app.get('/api/system/status', async (req, res) => {
   const SyncLog = require('./models/SyncLog');
