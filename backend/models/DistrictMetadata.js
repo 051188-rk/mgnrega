@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// This is the original schema without any 'location' or '2dsphere' index
 const DistrictMetadataSchema = new mongoose.Schema({
   district_code: { type: String, unique: true, index: true },
   district_name: { type: String, index: true },
