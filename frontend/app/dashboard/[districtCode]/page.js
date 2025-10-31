@@ -51,10 +51,11 @@ export default function DashboardPage() {
 
   // New combined chart data
   const chartData = useMemo(() => history.map(h => ({
-    label: `${h.month}-${h.fin_year}`,
+    month: h.month,
+    year: h.fin_year ? h.fin_year.toString() : '',
     households: Number(h.total_households_worked || 0),
     expenditure: Number(h.total_expenditure || 0)
-  })), [history])
+  })).filter(d => d.year), [history]) // Filter out any entries without a year
 
   if (loading || !current) return (
     <main className="max-w-6xl mx-auto p-4 h-screen flex flex-col items-center justify-center gap-4">
