@@ -10,9 +10,17 @@ const connectDB = require('./config/database');
 const districtsRouter = require('./routes/districts');
 const locationRouter = require('./routes/location');
 const financialRouter = require('./routes/financial');
-const { startDataSyncScheduler } = require('./services/dataSync');
-const SyncLog = require('./models/SyncLog');
-const DistrictSnapshot = require('./models/DistrictSnapshot');
+const memoryDB = require('./services/memoryDB');
+
+// Mock models
+const SyncLog = {
+  findOne: (query) => memoryDB.getLatestSyncLog(),
+  create: (data) => memoryDB.createSyncLog(data)
+};
+
+const DistrictSnapshot = {
+  estimatedDocumentCount: () => Promise.resolve(memoryDB.db.snapshots.length)
+};
 
 const app = express();
 app.set('trust proxy', 1);
@@ -28,32 +36,18 @@ app.use(morgan('dev'));
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 500 });
 app.use('/api', limiter);
 
-// Start the server only after database connection is established
-const startServer = async () => {
-  try {
-    await connectDB();
-    
-    // Start data sync scheduler after successful DB connection
-    try {
-      await startDataSyncScheduler();
-      console.log('Data sync scheduler started successfully');
-    } catch (syncError) {
-      console.error('Failed to start data sync scheduler:', syncError);
-      // Don't crash the app if sync fails, but log it
-    }
-
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`API listening on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-};
-
-// Initialize the server
-startServer();
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`API listening on port ${PORT}`);
+  
+  // Initialize in-memory database
+  connectDB().then(() => {
+    console.log('Server is ready to handle requests');
+  }).catch(err => {
+    console.error('Failed to initialize database:', err);
+  });
+});
 
 // Routes
 app.use('/api/districts', districtsRouter);
